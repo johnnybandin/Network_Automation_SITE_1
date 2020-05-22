@@ -3,8 +3,8 @@ My first GNS3 Topology configured and automated using Ansible &amp; Python.
 
 OVERVIEW:
 
-The goal of this site is to do configure a simple network (2 routers, 1 switch) with Ansible. Once the topology is up and all 
-network devices can reach the internet, i will create python scripts using the netmiko library to automate daily tasks, and 
+The goal of this site is to configure a simple network (2 routers, 1 switch) with Ansible. Once the topology is up and all 
+network devices can reach the internet, I will create python scripts using the netmiko library to automate daily tasks, and 
 make changes to network devices. 
 
 HARDWARE & SOFTWARE:
