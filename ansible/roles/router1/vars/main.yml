@@ -1,0 +1,14 @@
+---
+routers:
+
+  - hostname: VIRLR1
+    loopbackip: 1.1.1.1 255.255.255.255
+    network: 10.0.0.1 0.0.0.0 area 0
+    network1: 192.168.122.0 0.0.0.255 area 0
+    originate: originate
+    gigabitethernet0: gi 0/0
+    nat_out: nat outside
+    gigabitethernet1: gi 0/1
+    gi1ip: 10.0.0.1 255.255.255.0
+    nat_in: nat inside
+

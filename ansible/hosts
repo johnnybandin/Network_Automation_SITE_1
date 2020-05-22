@@ -1,0 +1,5 @@
+## Ansible Hosts File
+
+[VIRL_routers]
+VIRLR1 ansible_host=192.168.122.80
+VIRLR2 ansible_host=10.0.0.2

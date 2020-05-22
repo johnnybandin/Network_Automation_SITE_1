@@ -1,0 +1,33 @@
+---
+## Playbook to backup Cisco running-config
+
+- hosts: localhost
+
+  tasks:
+    - name: Get ansible date/time facts
+      setup:
+        filter: "ansible_date_time"
+        gather_subset: "!all"
+
+    - name: Store DTG as a fact
+      set_fact:
+        DTG: "{{ ansible_date_time.date }}"
+      
+    - name: Create Directory {{hostvars.localhost.DTG}}
+      file:
+        path: ~/Network_Automation_SITE_1/ansible/backups/{{hostvars.localhost.DTG}}
+        state: directory
+  run_once: true
+
+- hosts: VIRLR1
+
+  tasks:
+    - name: Backup Running-Config
+      ios_command:
+        commands: show run
+      register: config
+
+    - name: Save output to ~/Network_Automation_SITE_1/ansible/backups/
+      copy:
+        content: "{{config.stdout[0]}}"
+        dest: "~/Network_Automation_SITE_1/ansible/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-config.txt"

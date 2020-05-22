@@ -1,0 +1,24 @@
+# Push templated configs to routers
+---
+- hosts: VIRLR1
+
+  tasks:
+
+    - name: Push config from config folder
+      ios_config:
+        src: "./configs/{{inventory_hostname}}.txt"
+
+    - name: Configure ACl/NAT
+      ios_config:
+        lines:
+          - ip nat inside source list 1 interface gi0/0 overload
+          - access-list 1 permit 0.0.0.0 255.255.255.255
+    
+- hosts: VIRLR2
+  
+  tasks:
+
+    - name: Push config from config folder
+      ios_config:
+        src: "./configs/{{inventory_hostname}}.txt"
+    

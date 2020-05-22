@@ -1,0 +1,21 @@
+---
+routers:
+
+  - hostname: VIRLR2
+    loopbackip: 1.1.1.1 255.255.255.255
+    network: 10.0.0.2 0.0.0.0 area 0
+    network1: 22.1.1.0 0.0.0.31 area 0
+    network2: 22.1.1.32 0.0.0.31 area 0
+    gigabitethernet0: gi 0/0
+    gi0ip: 10.0.0.2 255.255.255.0
+    gigabitethernet1: gi 0/1
+    gi1_10: gi0/1.10
+    ten: 10
+    gi1_10ip: 22.1.1.1 255.255.255.224
+
+
+
+
+
+    
+   

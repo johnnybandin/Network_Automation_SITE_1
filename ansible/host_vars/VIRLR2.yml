@@ -1,0 +1,6 @@
+---
+# VIRLR2 Connectivity Variables
+ansible_user: "johnny"
+ansible_ssh_pass: "cisco"
+ansible_network_os: "ios"
+ansible_connection: "network_cli"
