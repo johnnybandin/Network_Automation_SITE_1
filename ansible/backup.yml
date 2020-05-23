@@ -19,7 +19,7 @@
         state: directory
   run_once: true
 
-- hosts: VIRLR1
+- hosts: VIRL_routers
 
   tasks:
     - name: Backup Running-Config
@@ -31,3 +31,43 @@
       copy:
         content: "{{config.stdout[0]}}"
         dest: "~/Network_Automation_SITE_1/ansible/backups/{{hostvars.localhost.DTG}}/{{inventory_hostname}}-{{hostvars.localhost.DTG}}-config.txt"
+- hosts: localhost
+
+  tasks:
+    - name: Get ansible date/time facts
+      setup:
+        filter: "ansible_date_time"
+        gather_subset: "!all"
+
+    - name: Store DTG as a fact
+      set_fact:
+        DTG: "{{ ansible_date_time.date }}"
+      
+    - name: Create Directory {{hostvars.localhost.DTG}}
+      file:
+        path: ~/Network_Automation_SITE_1/ansible/backups/show_commands/{{hostvars.localhost.DTG}}
+        state: directory
+  run_once: true
+
+- hosts: VIRL_routers
+  gather_facts: false
+  vars:
+    command_list:
+      - show cdp neighbor
+      - show ip ospf neighbor
+      - show users
+      - show clock
+      - show ip int br
+      - show arp
+      - show clock
+  
+  tasks:
+    - name: Run show commands and save output
+      ios_command:
+        commands: "{{ command_list }}"
+      register: showoutput
+
+    - name: Put all the files together into one nice text file
+      template:
+        src: show_template.j2
+        dest: "~/Network_Automation_SITE_1/ansible/backups/show_commands/{{hostvars.localhost.DTG}}/{{ inventory_hostname }}-{{hostvars.localhost.DTG}}-showoutput.txt"

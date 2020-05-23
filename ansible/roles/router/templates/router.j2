@@ -6,14 +6,46 @@ interface loopback0
 description ///Router-ID\\\
 ip address {{item.loopbackip}}
 
-router ospf 1
+interface loopback 1
+ description ///TEST NETWORK\\\
+ip address {{item.loopbackip1}}
+
+ip route {{item.default}} {{item.gateway}}
+
+router ospf {{item.ospfprocessid}}
  network {{item.network}}
  network {{item.network1}}
  network {{item.network2}}
+ network {{item.network3}}
+ area 0 authentication message-digest
+ passive-interface default
+ no passive-interface {{item.gigabitethernet0}}
+ no passive-interface {{item.gigabitethernet1}}
+ no passive-interface {{item.gigabitethernet2}}
+ 
 
-
+router eigrp {{item.eigrpname}}
+ address-family ipv4 unicast auto {{item.as}}
+  network {{item.network4}}
+  network {{item.network5}}
+  af-interface default
+   passive-interface
+   exit
+  af-interface {{item.gigabitethernet3}}
+   no passive-interface
+   authentication key-chain {{item.chain}}
+   authentication mode md5
+  exit
+  topology base
+   redistribute ospf {{item.ospfprocessid}}
+interface {{item.gigabitethernet3}}
+ ip address {{item.gi3ip}}
+interface {{item.gigabitethernet2}}
+ ip add {{item.gi2ip}}
+ no shut
 interface {{item.gigabitethernet0}}
  ip add {{item.gi0ip}}
+ ip ospf message-digest-key 1 md5 {{item.ospfkey}}
  no shut
 
 interface {{item.gigabitethernet1}}
@@ -23,4 +55,41 @@ interface {{item.gi1_10}}
  description ///VLAN_10_DATA\\\
  encapsulation dot1q {{item.ten}}
  ip address {{item.gi1_10ip}}
+
+interface {{item.gi1_20}}
+ description ///VLAN_20_VOICE\\\
+ encapsulation dot1q {{item.twenty}}
+ ip address {{item.gi1_20ip}}
  
+ip dhcp pool {{item.data_vlan}}
+ network {{item.network_data}}
+ default-router {{item.gateway_data}}
+ lease 7
+ dns 8.8.8.8 {{item.dns_secondary}}
+
+ip dhcp pool {{item.voice_vlan}}
+ network {{item.network_voice}}
+ default-router {{item.gateway_voice}}
+ lease 7 
+ dns 8.8.8.8 {{item.dns_secondary}}
+ option 150 ip 10.20.20.1
+
+aaa new-model 
+
+tacacs server {{item.tacacs_name}}
+ address ipv4 {{item.tacacsip}}
+ key {{item.tacacskey}}
+
+aaa group server tacacs+ {{item.tacacsgroup}}
+ server name {{item.tacacs_name}}
+     
+aaa authentication login default group {{item.tacacsgroup}} local
+
+ntp server {{item.ntpmaster}}
+clock timezone {{item.timezone}}
+
+key chain {{item.chain}}
+ key 1
+  send-lifetime {{item.key1time}}
+  accept-lifetime {{item.key1time}}
+  key-string {{item.key1}}

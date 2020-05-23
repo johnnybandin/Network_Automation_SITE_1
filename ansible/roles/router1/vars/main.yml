@@ -2,13 +2,24 @@
 routers:
 
   - hostname: VIRLR1
-    loopbackip: 1.1.1.1 255.255.255.255
+    loopbackip: 1.1.1.2 255.255.255.0
     network: 10.0.0.1 0.0.0.0 area 0
-    network1: 192.168.122.0 0.0.0.255 area 0
-    originate: originate
+    network1: 1.1.1.0 0.0.0.255 area 0
     gigabitethernet0: gi 0/0
-    nat_out: nat outside
+    gi0ip: 192.168.122.80 255.255.255.0
     gigabitethernet1: gi 0/1
     gi1ip: 10.0.0.1 255.255.255.0
-    nat_in: nat inside
+    ospfkey: "cisco"
+    tacacs_name: tacacsgui
+    tacacsip: 192.168.122.149
+    tacacskey: cisco
+    tacacsgroup: VIRLgroup
+    ntpmaster: 3.north-america.pool.ntp.org
+    timezone: EST -4
+    chain: EIGRP
+    key1time: 00:00:00 1 MAY 2020 23:59:59 30 MAY 2020
+    key1: cisco
+
+
+
 

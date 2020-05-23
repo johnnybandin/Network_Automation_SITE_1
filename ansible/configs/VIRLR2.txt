@@ -4,16 +4,48 @@ hostname VIRLR2
 
 interface loopback0
 description ///Router-ID\\\
-ip address 1.1.1.1 255.255.255.255
+ip address 2.2.2.2 255.255.255.0
+
+interface loopback 1
+ description ///TEST NETWORK\\\
+ip address 77.77.77.1 255.255.255.0
+
+ip route 0.0.0.0 0.0.0.0 192.168.122.1
 
 router ospf 1
  network 10.0.0.2 0.0.0.0 area 0
  network 22.1.1.0 0.0.0.31 area 0
  network 22.1.1.32 0.0.0.31 area 0
+ network 2.2.2.0 0.0.0.255 area 0
+ area 0 authentication message-digest
+ passive-interface default
+ no passive-interface gi 0/0
+ no passive-interface gi 0/1
+ no passive-interface gi 0/2
+ 
 
-
+router eigrp johnny
+ address-family ipv4 unicast auto 5
+  network 77.77.77.0 0.0.0.255
+  network 12.12.12.0 0.0.0.255
+  af-interface default
+   passive-interface
+   exit
+  af-interface gi 0/3
+   no passive-interface
+   authentication key-chain EIGRP
+   authentication mode md5
+  exit
+  topology base
+   redistribute ospf 1
+interface gi 0/3
+ ip address 12.12.12.1 255.255.255.0
+interface gi 0/2
+ ip add 192.168.122.81 255.255.255.0
+ no shut
 interface gi 0/0
  ip add 10.0.0.2 255.255.255.0
+ ip ospf message-digest-key 1 md5 cisco
  no shut
 
 interface gi 0/1
@@ -23,4 +55,41 @@ interface gi0/1.10
  description ///VLAN_10_DATA\\\
  encapsulation dot1q 10
  ip address 22.1.1.1 255.255.255.224
+
+interface gi0/1.20
+ description ///VLAN_20_VOICE\\\
+ encapsulation dot1q 20
+ ip address 22.1.1.33 255.255.255.224
  
+ip dhcp pool DATA
+ network 22.1.1.0 /27
+ default-router 22.1.1.1
+ lease 7
+ dns 8.8.8.8 192.168.122.90
+
+ip dhcp pool VOICE
+ network 22.1.1.32 /27
+ default-router 22.1.1.33
+ lease 7 
+ dns 8.8.8.8 192.168.122.90
+ option 150 ip 10.20.20.1
+
+aaa new-model 
+
+tacacs server tacacsgui
+ address ipv4 192.168.122.149
+ key cisco
+
+aaa group server tacacs+ VIRLgroup
+ server name tacacsgui
+     
+aaa authentication login default group VIRLgroup local
+
+ntp server 192.168.122.80
+clock timezone EST -4
+
+key chain EIGRP
+ key 1
+  send-lifetime 00:00:00 1 MAY 2020 23:59:59 30 MAY 2020
+  accept-lifetime 00:00:00 1 MAY 2020 23:59:59 30 MAY 2020
+  key-string cisco

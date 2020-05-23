@@ -1,7 +1,10 @@
 ---
 # VIRLR1 router login variables
 
-ansible_user: "johnny"
+ansible_user: "johnny1"
 ansible_ssh_pass: "cisco"
 ansible_network_os: "ios"
 ansible_connection: "network_cli"
+ansible_become: yes
+anisble_become_method: enable
+ansible_become_password: "cisco"

@@ -1,0 +1,55 @@
+OUTPUT FROM SHOW COMMANDS for: VIRLR1
+
+############### show cdp neighbor ########################
+
+Capability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge
+                  S - Switch, H - Host, I - IGMP, r - Repeater, P - Phone, 
+                  D - Remote, C - CVTA, M - Two-port Mac Relay 
+
+Device ID        Local Intrfce     Holdtme    Capability  Platform  Port ID
+VIRLR2.test.lab  Gig 0/1           130              R B             Gig 0/0
+VIRLR2.test.lab  Gig 0/0           176              R B             Gig 0/2
+
+Total cdp entries displayed : 2
+
+############### show ip ospf neighbor ########################
+
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+2.2.2.2           1   FULL/BDR        00:00:35    10.0.0.2        GigabitEthernet0/1
+
+############### show users ########################
+
+Line       User       Host(s)              Idle       Location
+   0 con 0                192.168.122.80       00:01:12
+ 578 vty 0     johnny1    idle                 00:01:12 192.168.122.80
+*579 vty 1     johnny1    idle                 00:00:00 192.168.122.1
+
+  Interface    User               Mode         Idle     Peer Address
+
+############### show clock ########################
+
+.03:56:28.233 EST Sat May 23 2020
+
+############### show ip int br ########################
+
+Interface                  IP-Address      OK? Method Status                Protocol
+GigabitEthernet0/0         192.168.122.80  YES manual up                    up      
+GigabitEthernet0/1         10.0.0.1        YES manual up                    up      
+GigabitEthernet0/2         unassigned      YES NVRAM  administratively down down    
+GigabitEthernet0/3         unassigned      YES NVRAM  administratively down down    
+Loopback0                  1.1.1.1         YES manual up                    up
+
+############### show arp ########################
+
+Protocol  Address          Age (min)  Hardware Addr   Type   Interface
+Internet  10.0.0.1                -   0cfc.bb02.6b01  ARPA   GigabitEthernet0/1
+Internet  10.0.0.2               47   0cfc.bb7d.4300  ARPA   GigabitEthernet0/1
+Internet  192.168.122.1           1   5254.0079.d636  ARPA   GigabitEthernet0/0
+Internet  192.168.122.80          -   0cfc.bb02.6b00  ARPA   GigabitEthernet0/0
+Internet  192.168.122.81         29   0cfc.bb7d.4302  ARPA   GigabitEthernet0/0
+Internet  192.168.122.149         0   0cfc.bb8b.5700  ARPA   GigabitEthernet0/0
+
+############### show clock ########################
+
+.03:56:28.595 EST Sat May 23 2020
+

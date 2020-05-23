@@ -9,12 +9,33 @@ ip address {{item.loopbackip}}
 router ospf 1
  network {{item.network}}
  network {{item.network1}}
- default-information {{item.originate}}
+ area 0 authentication message-digest
 
 interface {{item.gigabitethernet0}}
-ip {{item.nat_out}}
+ ip add {{item.gi0ip}}
+ no shut
 
 interface {{item.gigabitethernet1}}
  ip add {{item.gi1ip}}
- ip {{item.nat_in}}
+ ip ospf message-digest-key 1 md5 {{item.ospfkey}}
  no shut
+
+aaa new-model 
+
+tacacs server {{item.tacacs_name}}
+ address ipv4 {{item.tacacsip}}
+ key {{item.tacacskey}}
+
+aaa group server tacacs+ {{item.tacacsgroup}}
+ server name {{item.tacacs_name}}
+     
+aaa authentication login default group {{item.tacacsgroup}} local
+
+ntp server {{item.ntpmaster}}
+clock timezone {{item.timezone}}
+
+key chain {{item.chain}}
+ key 1
+  send-lifetime {{item.key1time}}
+  accept-lifetime {{item.key1time}}
+  key-string {{item.key1}}

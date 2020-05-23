@@ -4,17 +4,38 @@ hostname VIRLR1
 
 interface loopback0
 description ///Router-ID\\\
-ip address 1.1.1.1 255.255.255.255
+ip address 1.1.1.2 255.255.255.0
 
 router ospf 1
  network 10.0.0.1 0.0.0.0 area 0
- network 192.168.122.0 0.0.0.255 area 0
- default-information originate
+ network 1.1.1.0 0.0.0.255 area 0
+ area 0 authentication message-digest
 
 interface gi 0/0
-ip nat outside
+ ip add 192.168.122.80 255.255.255.0
+ no shut
 
 interface gi 0/1
  ip add 10.0.0.1 255.255.255.0
- ip nat inside
+ ip ospf message-digest-key 1 md5 cisco
  no shut
+
+aaa new-model 
+
+tacacs server tacacsgui
+ address ipv4 192.168.122.149
+ key cisco
+
+aaa group server tacacs+ VIRLgroup
+ server name tacacsgui
+     
+aaa authentication login default group VIRLgroup local
+
+ntp server 3.north-america.pool.ntp.org
+clock timezone EST -4
+
+key chain EIGRP
+ key 1
+  send-lifetime 00:00:00 1 MAY 2020 23:59:59 30 MAY 2020
+  accept-lifetime 00:00:00 1 MAY 2020 23:59:59 30 MAY 2020
+  key-string cisco

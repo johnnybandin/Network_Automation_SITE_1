@@ -1,0 +1,60 @@
+OUTPUT FROM SHOW COMMANDS for: VIRLR2
+
+############### show cdp neighbor ########################
+
+Capability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge
+                  S - Switch, H - Host, I - IGMP, r - Repeater, P - Phone, 
+                  D - Remote, C - CVTA, M - Two-port Mac Relay 
+
+Device ID        Local Intrfce     Holdtme    Capability  Platform  Port ID
+VIRLR1.test.lab  Gig 0/0           162              R B             Gig 0/1
+VIRLR1.test.lab  Gig 0/2           137              R B             Gig 0/0
+Switch           Gig 0/1           173             R S I            Gig 0/1
+
+Total cdp entries displayed : 3
+
+############### show ip ospf neighbor ########################
+
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+1.1.1.1           1   FULL/DR         00:00:35    10.0.0.1        GigabitEthernet0/0
+
+############### show users ########################
+
+Line       User       Host(s)              Idle       Location
+   0 con 0                idle                 01:07:47   
+*578 vty 0     johnny1    idle                 00:00:00 192.168.122.1
+
+  Interface    User               Mode         Idle     Peer Address
+
+############### show clock ########################
+
+*03:55:57.344 EST Sat May 23 2020
+
+############### show ip int br ########################
+
+Interface                  IP-Address      OK? Method Status                Protocol
+GigabitEthernet0/0         10.0.0.2        YES manual up                    up      
+GigabitEthernet0/1         unassigned      YES NVRAM  up                    up      
+GigabitEthernet0/1.10      22.1.1.1        YES manual up                    up      
+GigabitEthernet0/1.20      22.1.1.33       YES manual up                    up      
+GigabitEthernet0/2         192.168.122.81  YES manual up                    up      
+GigabitEthernet0/3         12.12.12.1      YES manual administratively down down    
+Loopback0                  2.2.2.2         YES manual up                    up      
+Loopback1                  77.77.77.1      YES manual up                    up
+
+############### show arp ########################
+
+Protocol  Address          Age (min)  Hardware Addr   Type   Interface
+Internet  10.0.0.1               47   0cfc.bb02.6b01  ARPA   GigabitEthernet0/0
+Internet  10.0.0.2                -   0cfc.bb7d.4300  ARPA   GigabitEthernet0/0
+Internet  22.1.1.1                -   0cfc.bb7d.4301  ARPA   GigabitEthernet0/1.10
+Internet  22.1.1.33               -   0cfc.bb7d.4301  ARPA   GigabitEthernet0/1.20
+Internet  192.168.122.1          14   5254.0079.d636  ARPA   GigabitEthernet0/2
+Internet  192.168.122.80         29   0cfc.bb02.6b00  ARPA   GigabitEthernet0/2
+Internet  192.168.122.81          -   0cfc.bb7d.4302  ARPA   GigabitEthernet0/2
+Internet  192.168.122.149         0   0cfc.bb8b.5700  ARPA   GigabitEthernet0/2
+
+############### show clock ########################
+
+*03:55:57.716 EST Sat May 23 2020
+
