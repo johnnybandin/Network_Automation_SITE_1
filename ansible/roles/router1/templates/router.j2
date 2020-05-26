@@ -2,6 +2,14 @@
 
 hostname {{item.hostname}}
 
+archive
+ log config
+  logging enable
+  logging persistent auto
+  logging size 1000
+  hidekeys
+
+
 interface loopback0
 description ///Router-ID\\\
 ip address {{item.loopbackip}}
@@ -13,6 +21,7 @@ router ospf 1
 
 interface {{item.gigabitethernet0}}
  ip add {{item.gi0ip}}
+ service-policy output {{item.policy_QOS}}
  no shut
 
 interface {{item.gigabitethernet1}}
@@ -39,3 +48,31 @@ key chain {{item.chain}}
   send-lifetime {{item.key1time}}
   accept-lifetime {{item.key1time}}
   key-string {{item.key1}}
+ip access-list standard {{item.ssh_in}}
+  permit {{item.ssh_in_ip}}
+  permit {{item.ssh_in_ip1}}
+
+class-map {{item.video_class}}
+  match application {{item.webex}}
+  match application {{item.jabber}}
+  match application {{item.h323}}
+  match {{item.priority_high}}
+  match {{item.immediate_high}}
+  match {{item.priority_ef}}
+
+class-map {{item.voice_class}}
+ match application {{item.voip}}
+ match {{item.priority_medium}}
+ match {{item.immediate_medium}}
+
+
+policy-map {{item.policy_QOS}}
+ class {{item.video_class}}
+  bandwidth percent 50
+ class {{item.voice_class}}
+  bandwidth percent 30
+ class class-default
+  bandwidth percent 20
+
+line vty 0 4
+ access-class {{item.ssh_in}} in 

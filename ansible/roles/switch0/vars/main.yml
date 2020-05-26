@@ -1,0 +1,13 @@
+---
+switches:
+
+  - hostname: IOSvL2_S1
+    nameserver: 8.8.8.8
+    snmp1: test1
+    snmp2: test2
+    ntpserver: 192.168.122.80
+    timezone: EST -4
+    vlan20: DATA
+    vlan10: VOICE
+    
+

@@ -6,3 +6,6 @@ VIRLR2 ansible_host=192.168.122.81
 
 [VIRL_switches]
 IOSvL2_S1 ansible_host=192.168.122.71
+
+[7200-routers]
+R1 ansible_host=192.168.122.100

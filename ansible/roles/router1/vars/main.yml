@@ -19,6 +19,27 @@ routers:
     chain: EIGRP
     key1time: 00:00:00 1 MAY 2020 23:59:59 30 MAY 2020
     key1: cisco
+    defgateway: 192.168.122.1
+    allips: 0.0.0.0 0.0.0.0
+    ssh_in: SSH_IN
+    ssh_in_ip: 192.168.122.0 0.0.0.255
+    ssh_in_ip1: 22.1.1.0 0.0.0.63
+    video_class: VIDEO
+    webex: webex-meeting source nbar
+    jabber: jabber source nbar
+    h323: h323 source nbar
+    priority_high: dscp af13
+    immediate_high: dscp af23
+    priority_ef: dscp ef
+    voice_class: VOICE
+    voip: cisco-phone source nbar
+    priority_medium: dscp af12
+    immediate_medium: dscp af22
+    priority_low: dscp af11
+    immediate_low: dscp af21
+    policy_QOS: QOS_OUT
+    
+
 
 
 

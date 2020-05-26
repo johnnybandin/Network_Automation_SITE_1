@@ -2,6 +2,13 @@
 
 hostname {{item.hostname}}
 
+archive
+ log config
+  logging enable
+  logging persistent auto
+  logging size 1000
+  hidekeys
+
 interface loopback0
 description ///Router-ID\\\
 ip address {{item.loopbackip}}
@@ -22,6 +29,7 @@ router ospf {{item.ospfprocessid}}
  no passive-interface {{item.gigabitethernet0}}
  no passive-interface {{item.gigabitethernet1}}
  no passive-interface {{item.gigabitethernet2}}
+ redistribute eigrp {{item.as}} metric-type 1
  
 
 router eigrp {{item.eigrpname}}
@@ -31,18 +39,23 @@ router eigrp {{item.eigrpname}}
   af-interface default
    passive-interface
    exit
-  af-interface {{item.gigabitethernet3}}
+  af-interface {{item.gigabitethernet4}}
    no passive-interface
    authentication key-chain {{item.chain}}
    authentication mode md5
   exit
+  af-interface {{item.gigabitethernet5}}
+   no passive-interface
+   authentication key-chain {{item.chain}}
+   authentication mode md5
   topology base
-   redistribute ospf {{item.ospfprocessid}}
-interface {{item.gigabitethernet3}}
- ip address {{item.gi3ip}}
+   redistribute ospf {{item.ospfprocessid}} metric 1000000 10 255 1 1500
+
 interface {{item.gigabitethernet2}}
  ip add {{item.gi2ip}}
+ service-policy output {{item.policy_QOS}}
  no shut
+
 interface {{item.gigabitethernet0}}
  ip add {{item.gi0ip}}
  ip ospf message-digest-key 1 md5 {{item.ospfkey}}
@@ -51,29 +64,19 @@ interface {{item.gigabitethernet0}}
 interface {{item.gigabitethernet1}}
  no shut
 
-interface {{item.gi1_10}}
- description ///VLAN_10_DATA\\\
- encapsulation dot1q {{item.ten}}
- ip address {{item.gi1_10ip}}
-
-interface {{item.gi1_20}}
- description ///VLAN_20_VOICE\\\
- encapsulation dot1q {{item.twenty}}
- ip address {{item.gi1_20ip}}
+interface {{item.gigabitethernet3}}
+ no shut
  
-ip dhcp pool {{item.data_vlan}}
- network {{item.network_data}}
- default-router {{item.gateway_data}}
- lease 7
- dns 8.8.8.8 {{item.dns_secondary}}
+interface {{item.gigabitethernet4}}
+ description ///TO_R1_G1/0\\\
+ ip address {{item.gi4ip}}
+ no shut
 
-ip dhcp pool {{item.voice_vlan}}
- network {{item.network_voice}}
- default-router {{item.gateway_voice}}
- lease 7 
- dns 8.8.8.8 {{item.dns_secondary}}
- option 150 ip 10.20.20.1
-
+interface {{item.gigabitethernet5}}
+ description ///TO_R1_G2/0\\\
+ ip address {{item.gi5ip}}
+ no shut
+ 
 aaa new-model 
 
 tacacs server {{item.tacacs_name}}
@@ -93,3 +96,46 @@ key chain {{item.chain}}
   send-lifetime {{item.key1time}}
   accept-lifetime {{item.key1time}}
   key-string {{item.key1}}
+
+ip access-list standard {{item.ssh_in}}
+  permit {{item.ssh_in_ip}}
+  permit {{item.ssh_in_ip1}}
+
+ip access-list extended {{item.web_traffic}}
+  permit tcp host {{item.web_traffic_host_1}} any {{item.web_traffic_http}}
+  deny tcp {{item.web_traffic_deny_1}} any {{item.web_traffic_http}}
+  permit ip any any
+
+ip access-list extended {{item.class_web_traffic_ACL}}
+  permit tcp {{item.class_web_traffic_permit_ips}} any {{item.web_traffic_http_https}} 
+
+class-map {{item.video_class}}
+  match application {{item.webex}}
+  match application {{item.jabber}}
+  match application {{item.h323}}
+  match {{item.priority_high}}
+  match {{item.immediate_high}}
+  match {{item.priority_ef}}
+
+class-map {{item.voice_class}}
+ match application {{item.voip}}
+ match {{item.priority_medium}}
+ match {{item.immediate_medium}}
+
+class-map {{item.class_web_traffic}}
+ match access-group name {{item.class_web_traffic_ACL}}
+ match {{item.priority_low}}
+ match {{item.immediate_low}}
+
+policy-map {{item.policy_QOS}}
+ class {{item.video_class}}
+  bandwidth percent 50
+ class {{item.voice_class}}
+  bandwidth percent 30
+ class {{item.class_web_traffic}}
+  bandwidth percent 10
+ class class-default
+  bandwidth percent 10
+
+line vty 0 4
+ access-class {{item.ssh_in}} in 

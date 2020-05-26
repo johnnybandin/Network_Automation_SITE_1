@@ -2,6 +2,13 @@
 
 hostname VIRLR2
 
+archive
+ log config
+  logging enable
+  logging persistent auto
+  logging size 1000
+  hidekeys
+
 interface loopback0
 description ///Router-ID\\\
 ip address 2.2.2.2 255.255.255.0
@@ -22,27 +29,33 @@ router ospf 1
  no passive-interface gi 0/0
  no passive-interface gi 0/1
  no passive-interface gi 0/2
+ redistribute eigrp 5 metric-type 1
  
 
 router eigrp johnny
  address-family ipv4 unicast auto 5
-  network 77.77.77.0 0.0.0.255
-  network 12.12.12.0 0.0.0.255
+  network 172.16.1.0 0.0.0.3
+  network 172.17.1.0 0.0.0.3
   af-interface default
    passive-interface
    exit
-  af-interface gi 0/3
+  af-interface gi0/4
    no passive-interface
    authentication key-chain EIGRP
    authentication mode md5
   exit
+  af-interface gi0/5
+   no passive-interface
+   authentication key-chain EIGRP
+   authentication mode md5
   topology base
-   redistribute ospf 1
-interface gi 0/3
- ip address 12.12.12.1 255.255.255.0
+   redistribute ospf 1 metric 1000000 10 255 1 1500
+
 interface gi 0/2
  ip add 192.168.122.81 255.255.255.0
+ service-policy output QOS_OUT
  no shut
+
 interface gi 0/0
  ip add 10.0.0.2 255.255.255.0
  ip ospf message-digest-key 1 md5 cisco
@@ -51,29 +64,19 @@ interface gi 0/0
 interface gi 0/1
  no shut
 
-interface gi0/1.10
- description ///VLAN_10_DATA\\\
- encapsulation dot1q 10
- ip address 22.1.1.1 255.255.255.224
-
-interface gi0/1.20
- description ///VLAN_20_VOICE\\\
- encapsulation dot1q 20
- ip address 22.1.1.33 255.255.255.224
+interface gi 0/3
+ no shut
  
-ip dhcp pool DATA
- network 22.1.1.0 /27
- default-router 22.1.1.1
- lease 7
- dns 8.8.8.8 192.168.122.90
+interface gi0/4
+ description ///TO_R1_G1/0\\\
+ ip address 172.16.1.1 255.255.255.252
+ no shut
 
-ip dhcp pool VOICE
- network 22.1.1.32 /27
- default-router 22.1.1.33
- lease 7 
- dns 8.8.8.8 192.168.122.90
- option 150 ip 10.20.20.1
-
+interface gi0/5
+ description ///TO_R1_G2/0\\\
+ ip address 172.17.1.1 255.255.255.252
+ no shut
+ 
 aaa new-model 
 
 tacacs server tacacsgui
@@ -93,3 +96,46 @@ key chain EIGRP
   send-lifetime 00:00:00 1 MAY 2020 23:59:59 30 MAY 2020
   accept-lifetime 00:00:00 1 MAY 2020 23:59:59 30 MAY 2020
   key-string cisco
+
+ip access-list standard SSH_IN
+  permit 192.168.122.0 0.0.0.255
+  permit 22.1.1.0 0.0.0.63
+
+ip access-list extended WEB_SURFING
+  permit tcp host 22.1.1.4 any eq 80
+  deny tcp 22.1.1.0 0.0.0.31 any eq 80
+  permit ip any any
+
+ip access-list extended WEB_TRAFFIC
+  permit tcp 22.1.1.0 0.0.0.63 any eq 80 443 
+
+class-map VIDEO
+  match application webex-meeting source nbar
+  match application jabber source nbar
+  match application h323 source nbar
+  match dscp af13
+  match dscp af23
+  match dscp ef
+
+class-map VOICE
+ match application cisco-phone source nbar
+ match dscp af12
+ match dscp af22
+
+class-map WEB_TR
+ match access-group name WEB_TRAFFIC
+ match dscp af11
+ match dscp af21
+
+policy-map QOS_OUT
+ class VIDEO
+  bandwidth percent 50
+ class VOICE
+  bandwidth percent 30
+ class WEB_TR
+  bandwidth percent 10
+ class class-default
+  bandwidth percent 10
+
+line vty 0 4
+ access-class SSH_IN in 

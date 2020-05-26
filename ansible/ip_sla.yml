@@ -1,0 +1,55 @@
+---
+
+  - hosts: VIRL_routers
+
+    tasks:
+      - name: Set up EEM defaults
+        ios_config:
+          lines:
+             - event manager environment q
+             - event manager session cli username "johnny"
+
+      - name: Set up first EEM scripts to change default-route to be tracked
+        ios_config:
+          lines:
+            - event track 13 state up
+            - action 1.0 cli command "enable"
+            - action 1.5 cli command "conf t"
+            - action 2.0 cli command "no ip route 0.0.0.0 0.0.0.0 192.168.122.1"
+            - action 2.5 cli command "ip route 0.0.0.0 0.0.0.0 192.168.122.1 track 1"
+            - action 3.0 cli command "do wr"
+            - action 3.5 cli command "end"
+          parents: event manager applet CHANGE_IP_ROUTE_1
+
+      - name: Set up second EEM script to change default-route to be tracked
+        ios_config:
+          lines: 
+            - event track 1 state up
+            - action 1.0 cli command "enable"
+            - action 1.5 cli command "conf t"
+            - action 2.0 cli command "no ip route 0.0.0.0 0.0.0.0 192.168.122.1"
+            - action 2.5 cli command "ip route 0.0.0.0 0.0.0.0 192.168.122.1 track 1"
+            - action 3.0 cli command "do wr"
+            - action 3.5 cli command "end"
+          parents: event manager applet CHANGE_IP_ROUTE_2
+      
+      - name: Set up boolean track object
+        ios_config:
+          lines: 
+            - object 1
+          parents: track 13 list boolean and
+
+      - name: Send IP-SLA command once
+        ios_config:
+          lines:
+            - icmp-echo 192.168.122.1 source-interface {{ slainterface }}
+            - threshold 1000
+            - timeout 1000
+            - frequency 1
+          parents: ip sla 1
+
+      - name: Set up track Object
+        ios_config:
+          lines:
+            - ip sla schedule 1 start-time now life forever
+            - track 1 ip sla 1 reachability

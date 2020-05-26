@@ -1,0 +1,8 @@
+---
+  ansible_user: "johnny"
+  ansible_ssh_pass: "cisco"
+  ansible_network_os: "ios"
+  ansible_connection: "network_cli"
+  ansible_become: yes
+  ansible_become_method: enable
+  ansible_become_password: "cisco"

@@ -2,6 +2,14 @@
 
 hostname VIRLR1
 
+archive
+ log config
+  logging enable
+  logging persistent auto
+  logging size 1000
+  hidekeys
+
+
 interface loopback0
 description ///Router-ID\\\
 ip address 1.1.1.2 255.255.255.0
@@ -13,6 +21,7 @@ router ospf 1
 
 interface gi 0/0
  ip add 192.168.122.80 255.255.255.0
+ service-policy output QOS_OUT
  no shut
 
 interface gi 0/1
@@ -39,3 +48,31 @@ key chain EIGRP
   send-lifetime 00:00:00 1 MAY 2020 23:59:59 30 MAY 2020
   accept-lifetime 00:00:00 1 MAY 2020 23:59:59 30 MAY 2020
   key-string cisco
+ip access-list standard SSH_IN
+  permit 192.168.122.0 0.0.0.255
+  permit 22.1.1.0 0.0.0.63
+
+class-map VIDEO
+  match application webex-meeting source nbar
+  match application jabber source nbar
+  match application h323 source nbar
+  match dscp af13
+  match dscp af23
+  match dscp ef
+
+class-map VOICE
+ match application cisco-phone source nbar
+ match dscp af12
+ match dscp af22
+
+
+policy-map QOS_OUT
+ class VIDEO
+  bandwidth percent 50
+ class VOICE
+  bandwidth percent 30
+ class class-default
+  bandwidth percent 20
+
+line vty 0 4
+ access-class SSH_IN in 

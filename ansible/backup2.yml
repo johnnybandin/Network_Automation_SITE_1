@@ -1,0 +1,72 @@
+---
+## Get running-config with date/time
+
+- hosts: localhost
+
+  tasks:
+    - name: Get ansible date/time facts
+      setup:
+        filter: "ansible_date_time"
+        gather_subset: "!all"
+
+    - name: Store DTG as a fact
+      set_fact: 
+        DTG: "{{ ansible_date_time.date }}"
+
+    - name: Create directory {{hostvars.localhost.DTG}}
+      file:
+        path: ~/ansible/backups/{{hostvars.localhost.DTG}}
+        state: directory
+  run_once: true
+
+- hosts: IOSvL2_switches
+
+  tasks:
+    - name: Backup Running-config
+      ios_command: 
+        commands: show running-config
+      register: config
+
+    - name: save output to ~/ansible/backups/
+      copy:
+        content: "{{config.stdout[0]}}"
+        dest: "~/ansible/backups/{{hostvars.localhost.DTG}}/{{inventory_hostanme}}-{{hostvars.localhost.DTG}}-config.txt"
+    
+- hosts: IOSvL2_switches
+  gather_facts: false
+  vars:
+    command_list:
+      - show cdp neighbor
+      - show lldp neighbor
+      - show users
+      - show clock
+      - show interface status
+      - show ip int br
+      - show ip route
+      - show ip dhcp binding
+      - show ip dhcp pool
+      - show ip arp
+      - show mac address-table
+      - show port-security
+      - show ip protocols
+      - show vlan
+      - show interfaces trunk
+      - show etherchannel summary
+      - show ip arp inspection
+      - show spanning-tree 
+      - show version
+  
+  tasks:
+    - name: Run show commands and save output
+      ios_command:
+        commands: "{{ command_list }}"
+      register: showoutput
+
+    - name: Put all the files together into one nice text file
+      template:
+        src: show_template.j2
+        dest: "~/ansible/backups/show_commands/{{hostvars.localhost.DTG}}/{{ inventory_hostname }}-{{hostvars.localhost.DTG}}-showoutput.txt"
+
+
+
+

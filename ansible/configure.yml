@@ -8,4 +8,12 @@
       ios_config:
         src: "./configs/{{inventory_hostname}}.txt"
 
+- hosts: 7200-routers
+
+  tasks: 
+
+    - name: Push config from config folder
+      ios_config:
+        src: "./configs/{{inventory_hostname}}.txt"
+
 

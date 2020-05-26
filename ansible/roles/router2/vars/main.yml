@@ -1,0 +1,52 @@
+---
+
+routers:
+
+  - hostname: R1
+    loopbackip0: 3.3.0.1 255.255.255.0
+    loopbackip1: 3.3.1.1 255.255.255.0
+    loopbackip2: 3.3.2.1 255.255.255.0
+    loopbackip3: 3.3.3.1 255.255.255.0
+    gigabitethernet1: gi1/0
+    gi1ip: 172.16.1.2 255.255.255.252
+    gigabitethernet2: gi2/0
+    gi2ip: 172.17.1.2 255.255.255.252
+    gigabitethernet3: gi3/0
+    gi3ip: 192.168.122.100 255.255.255.0
+    tacacs_name: tacacsgui
+    tacacsip: 192.168.122.149
+    tacacskey: cisco
+    tacacsgroup: VIRLgroup
+    ntpmaster: 192.168.122.80
+    timezone: EST -4
+    chain: EIGRP
+    key1time: 00:00:00 1 MAY 2020 23:59:59 30 MAY 2020
+    key1: cisco 
+    ssh_in: SSH_IN
+    ssh_in_ip: 192.168.122.0 0.0.0.255
+    ssh_in_ip1: 22.1.1.0 0.0.0.63
+    video_class: VIDEO
+    webex: webex-meeting 
+    jabber: jabber 
+    h323: h323 
+    priority_high: dscp af13
+    immediate_high: dscp af23
+    priority_ef: dscp ef
+    voice_class: VOICE
+    voip: cisco-phone 
+    priority_medium: dscp af12
+    immediate_medium: dscp af22
+    policy_QOS: QOS_OUT
+    eigrpname: johnny
+    as: 5
+    network0: 172.16.1.0 0.0.0.3
+    network1: 172.17.1.0 0.0.0.3
+    network2: 3.3.0.0 0.0.3.255
+    network3: 12.12.12.0 
+    summary_address_loopbacks: 3.3.0.0/22
+    
+
+
+
+    
+  

@@ -1,0 +1,8 @@
+---
+- hosts: R1
+
+  tasks:
+    - name: test
+      ios_config:
+        lines:
+          - ip domain-lookup

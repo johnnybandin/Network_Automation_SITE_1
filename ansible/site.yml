@@ -3,5 +3,6 @@
   hosts: localhost
 
   roles:
+    - router2
     - router1
     - router
